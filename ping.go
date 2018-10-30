@@ -93,7 +93,7 @@ func NewPinger(addr string) (*Pinger, error) {
 		id:       rand.Intn(0xffff),
 		network:  "udp",
 		ipv4:     ipv4,
-		Size:    timeSliceLength,
+		Size:     timeSliceLength,
 
 		done: make(chan bool),
 	}, nil
@@ -291,6 +291,8 @@ func (p *Pinger) run() {
 	timeout := time.NewTicker(p.Timeout)
 	interval := time.NewTicker(p.Interval)
 	c := make(chan os.Signal, 1)
+	defer signal.Stop(c)
+	defer close(c)
 	signal.Notify(c, os.Interrupt)
 	signal.Notify(c, syscall.SIGTERM)
 
